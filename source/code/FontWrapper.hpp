@@ -30,9 +30,17 @@ http://www.blockattack.net
 
 class FontWrapper {
 	NFont theFont;
+	NFont theOutline;
+	TTF_Font* ttf_font = nullptr;
+	int outline = 0;
 	
 public:
 	void draw(SDL_Renderer* target, int x, int y, const std::string& text) {
+		if (outline) {
+			TTF_SetFontOutline(ttf_font, outline);
+			theOutline.draw(target, x, y, "%s", text.c_str());
+			TTF_SetFontOutline(ttf_font, 0);
+		}
 		theFont.draw(target, x, y, "%s", text.c_str());
 	}
 	
@@ -57,6 +65,13 @@ public:
 	}
 	
 	bool load(SDL_Renderer* target, TTF_Font* font, const NFont::Color& color) {
+		return theFont.load(target, font, color);
+	}
+	
+	bool loadWithOutline(SDL_Renderer* target, TTF_Font* font, const NFont::Color& color, int outline, const NFont::Color& outline_color) {
+		ttf_font = font;
+		this->outline = outline;
+		theOutline.load(target, font, outline_color);
 		return theFont.load(target, font, color);
 	}
 };
